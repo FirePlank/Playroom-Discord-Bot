@@ -16,21 +16,25 @@ class Ticket(commands.GroupCog):
             guild = interaction.guild
             category = discord.utils.get(guild.categories, name="Tickets")
             if category is None:
-                category = await guild.create_category("Tickets", position=0, overwrites={
-                    guild.default_role: discord.PermissionOverwrite(read_messages=False),
-                    guild.me: discord.PermissionOverwrite(read_messages=True),
-                })
+                category = await guild.create_category(
+                    "Tickets",
+                    position=0,
+                    overwrites={
+                        guild.default_role: discord.PermissionOverwrite(read_messages=False),
+                        guild.me: discord.PermissionOverwrite(read_messages=True),
+                    },
+                )
 
-            channel = await category.create_text_channel(f"ticket-{interaction.user.display_name}")
+            channel = await category.create_text_channel(interaction.user.name)
             await channel.set_permissions(interaction.user, read_messages=True, send_messages=True)
             embed = discord.Embed(
                 title="Ticket",
                 description="Please explain what you need help with. To close this ticket, type `/ticket close`",
-                color=discord.Color.blurple()
+                color=discord.Color.blurple(),
             )
-            await channel.send(content=f"{interaction.user.mention}",
-                               embed=embed,
-                               allowed_mentions=discord.AllowedMentions(users=True))
+            await channel.send(
+                content=interaction.user.mention, embed=embed, allowed_mentions=discord.AllowedMentions(users=True)
+            )
             await interaction.response.edit_message(content="Ticket created", view=None)
 
         @discord.ui.button(label="No", style=discord.ButtonStyle.danger)
@@ -43,16 +47,16 @@ class Ticket(commands.GroupCog):
         """Create a ticket"""
 
         for channel in interaction.guild.text_channels:
-            if channel.name == f"ticket-{interaction.user.display_name}":
+            if channel.name == interaction.user.name:
                 return await interaction.response.send_message(
                     "You already have an open ticket. Please close it first with `/ticket close` to open a new one.",
-                    ephemeral=True
+                    ephemeral=True,
                 )
 
         await interaction.response.send_message(
             "Do you want to create a ticket? Misuse of this command will result in a ban.",
             ephemeral=True,
-            view=self.TicketView()
+            view=self.TicketView(),
         )
 
     @app_commands.command()

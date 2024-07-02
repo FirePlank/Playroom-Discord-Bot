@@ -1,11 +1,9 @@
 import os
-from typing import Any
 
 import discord
 from discord import InteractionType
 from discord.app_commands import AppCommandError
 from discord.ext import commands
-from discord.ext.commands import errors
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -16,7 +14,7 @@ class Bot(commands.Bot):
         super().__init__(
             command_prefix="!",
             intents=discord.Intents.all(),
-            allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=False)
+            allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=False),
         )
 
     async def startup(self):

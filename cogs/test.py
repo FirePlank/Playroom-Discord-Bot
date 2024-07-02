@@ -8,7 +8,6 @@ class Test(commands.Cog):
         self.bot = bot
 
     @app_commands.command()
-    # @app_commands.guilds() If you want to define specific guilds (Currently, this is global)
     async def test(self, interaction: discord.Interaction):
         """command description"""
         await interaction.response.send_message(r"cogs \o/")
