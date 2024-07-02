@@ -1,4 +1,6 @@
 import os
+import sqlite3
+from sqlite3 import Connection
 
 import discord
 from discord import InteractionType
@@ -7,6 +9,56 @@ from discord.ext import commands
 from dotenv import load_dotenv
 
 load_dotenv()
+
+
+class Database:
+    def __init__(self, db_name: str = "bot.db"):
+        self.connection: Connection = sqlite3.connect(db_name, check_same_thread=False)
+        self.cursor = self.connection.cursor()
+        self.create_tables()
+
+    def add_guilds(self, bot):
+        for guild in bot.guilds:
+            self.cursor.execute(
+                """
+                INSERT OR IGNORE INTO settings (guild_id)
+                VALUES (?)
+            """,
+                (guild.id,),
+            )
+        self.connection.commit()
+
+    def create_tables(self):
+        self.cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS warnings (
+                user_id INTEGER,
+                warning_id INTEGER,
+                warning_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                reason TEXT
+            )
+        """
+        )
+
+        self.cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS settings (
+                guild_id INTEGER,
+                staff_role_id INTEGER,
+                logging_channel_id INTEGER,
+                logging_on BOOLEAN DEFAULT TRUE,
+                ticket_category_id INTEGER
+            )
+        """
+        )
+
+        self.connection.commit()
+
+    def get_cursor(self):
+        return self.cursor
+
+    def get_connection(self):
+        return self.connection
 
 
 class Bot(commands.Bot):
@@ -20,11 +72,14 @@ class Bot(commands.Bot):
     async def startup(self):
         await bot.wait_until_ready()
         await bot.tree.sync()
+        self.db.add_guilds(self)
         print("Successfully synced applications commands")
         print(f"Connected as {bot.user}")
 
     async def setup_hook(self):
         self.tree.on_error = self.on_app_command_error
+        self.db = Database()
+
         for filename in os.listdir("./cogs"):
             if filename.endswith(".py"):
                 try:
