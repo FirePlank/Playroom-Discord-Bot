@@ -42,6 +42,9 @@ class Logging(commands.GroupCog):
 
         logging_channel_id = cursor.fetchone()
         if logging_channel_id:
+            if message.content == "" or message.channel.id == logging_channel_id[0]:
+                return
+
             logging_channel = self.bot.get_channel(logging_channel_id[0])
             embed = discord.Embed(
                 title="Message Deleted",
