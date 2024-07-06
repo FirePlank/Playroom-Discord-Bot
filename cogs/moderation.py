@@ -134,6 +134,25 @@ class Moderation(commands.Cog):
         # Send a confirmation message in the channel, including the DM status
         await interaction.response.send_message(f"{member.mention} has been warned for '{reason}'. {dm_status}")
 
+        cursor.execute(
+            """
+            SELECT logging_channel_id
+            FROM settings
+            WHERE guild_id = ?
+            """,
+            (interaction.guild.id,),
+        )
+        logging_channel_id = cursor.fetchone()
+        if logging_channel_id:
+            logging_channel = interaction.guild.get_channel(logging_channel_id[0])
+            embed = discord.Embed(
+                title="Member Warned",
+                description=f"{member.mention} has been warned for '{reason}'",
+                color=discord.Color.yellow(),
+            )
+            embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
+            await logging_channel.send(embed=embed)
+
     @app_commands.command()
     @app_commands.check(is_staff)
     async def warnings(self, interaction: discord.Interaction, member: discord.Member):

@@ -81,6 +81,47 @@ class Logging(commands.GroupCog):
             await logging_channel.send(embed=embed)
 
     @commands.Cog.listener()
+    async def on_member_ban(self, interaction, member, reason):
+        logging_channel_id = (
+            self.bot.db.get_cursor()
+            .execute(
+                """
+            SELECT logging_channel_id
+            FROM settings
+            WHERE guild_id = ?
+        """,
+                (interaction.guild.id,),
+            )
+            .fetchone()[0]
+        )
+        if logging_channel_id:
+            logging_channel = self.bot.get_channel(logging_channel_id)
+            embed = discord.Embed(title="Member Banned", color=discord.Color.red())
+            embed.add_field(name="Member", value=member.mention, inline=False)
+            embed.add_field(name="Reason", value=reason or "No reason provided", inline=False)
+            await logging_channel.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_member_unban(self, interaction, member):
+        logging_channel_id = (
+            self.bot.db.get_cursor()
+            .execute(
+                """
+            SELECT logging_channel_id
+            FROM settings
+            WHERE guild_id = ?
+        """,
+                (interaction.guild.id,),
+            )
+            .fetchone()[0]
+        )
+        if logging_channel_id:
+            logging_channel = self.bot.get_channel(logging_channel_id)
+            embed = discord.Embed(title="Member Unbanned", color=discord.Color.green())
+            embed.add_field(name="Member", value=member.mention, inline=False)
+            await logging_channel.send(embed=embed)
+
+    @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
         cursor = self.bot.db.get_cursor()
         cursor.execute(
@@ -90,7 +131,7 @@ class Logging(commands.GroupCog):
         """,
             (guild.id,),
         )
-        self.db.connection.commit()
+        self.bot.db.connection.commit()
 
 
 async def setup(bot):
