@@ -31,24 +31,33 @@ class Database:
     def create_tables(self):
         self.cursor.execute(
             """
-            CREATE TABLE IF NOT EXISTS warnings (
-                user_id INTEGER,
-                warning_id INTEGER,
-                warning_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                reason TEXT
-            )
+                    CREATE TABLE IF NOT EXISTS warnings (
+                        user_id INTEGER,
+                        warning_id INTEGER,
+                        warning_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        reason TEXT
+                    )
         """
         )
 
         self.cursor.execute(
             """
-            CREATE TABLE IF NOT EXISTS settings (
-                guild_id INTEGER,
-                staff_role_id INTEGER,
-                logging_channel_id INTEGER,
-                logging_on BOOLEAN DEFAULT TRUE,
-                ticket_category_id INTEGER
-            )
+                    CREATE TABLE IF NOT EXISTS settings (
+                        guild_id INTEGER UNIQUE,
+                        staff_role_id INTEGER,
+                        logging_channel_id INTEGER,
+                        ticket_category_id INTEGER
+                    )
+        """
+        )
+
+        self.cursor.execute(
+            """
+                    CREATE TABLE IF NOT EXISTS tickets (
+                        user_id INTEGER NOT NULL,
+                        guild_id INTEGER NOT NULL,
+                        channel_id INTEGER NOT NULL
+                    )
         """
         )
 
