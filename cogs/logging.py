@@ -80,16 +80,16 @@ class Logging(commands.GroupCog):
             await logging_channel.send(embed=embed)
 
     @commands.Cog.listener()
-    async def on_member_ban(self, interaction, member, reason):
+    async def on_member_ban(self, guild, member):
         logging_channel_id = (
             self.bot.db.get_cursor()
             .execute(
                 """
-            SELECT logging_channel_id
-            FROM settings
-            WHERE guild_id = ?
-        """,
-                (interaction.guild.id,),
+                SELECT logging_channel_id
+                FROM settings
+                WHERE guild_id = ?
+                """,
+                (guild.id,),
             )
             .fetchone()[0]
         )
@@ -97,11 +97,10 @@ class Logging(commands.GroupCog):
             logging_channel = self.bot.get_channel(logging_channel_id)
             embed = discord.Embed(title="Member Banned", color=discord.Color.red())
             embed.add_field(name="Member", value=member.mention, inline=False)
-            embed.add_field(name="Reason", value=reason or "No reason provided", inline=False)
             await logging_channel.send(embed=embed)
 
     @commands.Cog.listener()
-    async def on_member_unban(self, interaction, member):
+    async def on_member_unban(self, guild, member):
         logging_channel_id = (
             self.bot.db.get_cursor()
             .execute(
@@ -110,7 +109,7 @@ class Logging(commands.GroupCog):
             FROM settings
             WHERE guild_id = ?
         """,
-                (interaction.guild.id,),
+                (guild.id,),
             )
             .fetchone()[0]
         )

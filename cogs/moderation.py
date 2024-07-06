@@ -190,7 +190,7 @@ class Moderation(commands.Cog):
         """Clear messages"""
 
         await interaction.channel.purge(limit=amount)
-        await interaction.response.send_message(f"{amount} messages have been cleared.")
+        await interaction.channel.send(f"{amount} messages cleared.", delete_after=2)
 
     @app_commands.command()
     @app_commands.check(is_staff)
