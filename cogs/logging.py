@@ -36,7 +36,6 @@ class Logging(commands.GroupCog):
             SELECT logging_channel_id
             FROM settings
             WHERE guild_id = ?
-            AND logging_on = TRUE
         """,
             (message.guild.id,),
         )
