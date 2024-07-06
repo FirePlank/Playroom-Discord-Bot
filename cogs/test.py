@@ -8,9 +8,9 @@ class Test(commands.Cog):
         self.bot = bot
 
     @app_commands.command()
-    async def test(self, interaction: discord.Interaction):
-        """command description"""
-        await interaction.response.send_message(r"cogs \o/")
+    async def ping(self, interaction: discord.Interaction):
+        """Ping the bot"""
+        await interaction.response.send_message(f"Pong! {round(self.bot.latency * 1000)}ms")
 
 
 async def setup(bot):

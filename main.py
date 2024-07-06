@@ -32,8 +32,9 @@ class Database:
         self.cursor.execute(
             """
                     CREATE TABLE IF NOT EXISTS warnings (
+                        guild_id INTEGER,
                         user_id INTEGER,
-                        warning_id INTEGER,
+                        warning_id INTEGER PRIMARY KEY AUTOINCREMENT,
                         warning_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                         reason TEXT
                     )

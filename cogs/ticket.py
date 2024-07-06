@@ -121,7 +121,7 @@ class Ticket(commands.GroupCog):
         category = interaction.guild.get_channel(category_id)
         if category is None:
             return await interaction.response.send_message(
-                "Ticket category not set or does not exist. Please ask an administrator to set it up.",
+                "The ticket system has not been set up yet. Please try again later.",
                 ephemeral=True,
             )
 

@@ -11,6 +11,7 @@ class Logging(commands.GroupCog):
     @app_commands.command()
     async def channel(self, interaction: discord.Interaction, channel: discord.TextChannel):
         """Set the logging channel"""
+
         cursor = self.bot.db.get_cursor()
         cursor.execute(
             """
@@ -27,6 +28,7 @@ class Logging(commands.GroupCog):
     async def on_message_delete(self, message):
         if message.guild is None:
             return
+
         # Send an embed message to the logging channel when a message is deleted
         cursor = self.bot.db.get_cursor()
         cursor.execute(
@@ -52,8 +54,9 @@ class Logging(commands.GroupCog):
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
-        if before.guild is None:
+        if before.guild is None or before.content == after.content:
             return
+
         # Send an embed message to the logging channel when a message is edited
         cursor = self.bot.db.get_cursor()
         cursor.execute(
